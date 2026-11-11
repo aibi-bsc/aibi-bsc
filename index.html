@@ -286,8 +286,8 @@ function applyLang() {
   $("btnEn").classList.toggle("on", lang === "en");
   document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
 }
-$("btnZh").onclick = () => { lang = "zh"; applyLang(); };
-$("btnEn").onclick = () => { lang = "en"; applyLang(); };
+$("btnZh").onclick = () => { lang = "zh"; applyLang(); setShare(); };
+$("btnEn").onclick = () => { lang = "en"; applyLang(); setShare(); };
 const T = (zh, en) => lang === "zh" ? zh : en;
 
 // ---------- chain reads ----------
@@ -334,10 +334,14 @@ function tick() {
 }
 
 // ---------- X share templates (always carry the site link) ----------
-const TWEET_ZH = "我来领 #AIBI 了 —— AI Buddies！BNB Chain 上 3,000 只链上 AI 伙伴：Agent ID 免费 300、X 蓝V免费 150，其余 0.01 BNB；3 只同阶还能熔炉合成更高阶，持有者将获得即将推出的 AIBI 代币份额。来领你的伙伴：" + SITE;
-const TWEET_EN = "Adopting my #AIBI — AI Buddies! 3,000 on-chain AI companions on BNB Chain: 300 free for Agent ID holders, 150 free for verified X accounts, the rest 0.01 BNB. Forge 3 of a tier into the next, and holders get an allocation of the upcoming AIBI token. Get yours: " + SITE;
-$("shareA").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(TWEET_ZH + " " + TWEET_EN);
-$("shareB").href = $("shareA").href;
+const TWEET_ZH = "我来领 #AIBI 了 —— AI Buddies！🤖\n\nBNB Chain 上 3,000 只链上 AI 伙伴\n\n✅ Agent ID 免费 300\n✅ 蓝V免费 150\n💰 其余 0.01 BNB\n\n3 只同阶合成 1 只高阶 🔥\n\n持有者得即将推出的 AIBI 代币份额 🎁\n\n来领你的伙伴 👇\n" + SITE;
+const TWEET_EN = "My first #AIBI — AI Buddies! 🤖\n\n3,000 on-chain AI companions on BNB Chain\n\n✅ 300 FREE for Agent ID\n✅ 150 FREE for verified X\n💰 The rest: 0.01 BNB\n\nHolders get a share of the coming AIBI token 🎁\n\nAdopt yours 👇\n" + SITE;
+function setShare() {
+  const t = lang === "zh" ? TWEET_ZH : TWEET_EN;
+  $("shareA").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(t);
+  $("shareB").href = $("shareA").href;
+}
+setShare();
 
 // ---------- wallet ----------
 let provider = null, account = null;

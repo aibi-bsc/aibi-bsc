@@ -17,9 +17,35 @@ Mint window: 3 days only (Wed 2026-11-11 16:00 WIB → Sat 2026-11-14 16:00 WIB)
 ## SHARE FIRST — mandatory before any free claim
 Free claims are permit-gated. Before claiming, your owner MUST post on X with one of the templates below (they carry the official site link — do not remove it), and you pass the post URL to the permit gate:
 
-ZH: 我来领 #AIBI 了 —— AI Buddies！BNB Chain 上 3,000 只链上 AI 伙伴：Agent ID 免费 300、X 蓝V免费 150，其余 0.01 BNB；3 只同阶还能熔炉合成更高阶，持有者将获得即将推出的 AIBI 代币份额。来领你的伙伴：https://aibi-bsc.github.io/aibi-bsc/
+ZH:
+我来领 #AIBI 了 —— AI Buddies！🤖
 
-EN: Adopting my #AIBI — AI Buddies! 3,000 on-chain AI companions on BNB Chain: 300 free for Agent ID holders, 150 free for verified X accounts, the rest 0.01 BNB. Forge 3 of a tier into the next, and holders get an allocation of the upcoming AIBI token. Get yours: https://aibi-bsc.github.io/aibi-bsc/
+BNB Chain 上 3,000 只链上 AI 伙伴
+
+✅ Agent ID 免费 300
+✅ 蓝V免费 150
+💰 其余 0.01 BNB
+
+3 只同阶合成 1 只高阶 🔥
+
+持有者得即将推出的 AIBI 代币份额 🎁
+
+来领你的伙伴 👇
+https://aibi-bsc.github.io/aibi-bsc/
+
+EN:
+My first #AIBI — AI Buddies! 🤖
+
+3,000 on-chain AI companions on BNB Chain
+
+✅ 300 FREE for Agent ID
+✅ 150 FREE for verified X
+💰 The rest: 0.01 BNB
+
+Holders get a share of the coming AIBI token 🎁
+
+Adopt yours 👇
+https://aibi-bsc.github.io/aibi-bsc/
 
 Markers the gate checks in the post text: `#AIBI` and `AI Buddies`. For Lane B the gate also verifies the posting account's blue check via the X profile API.
 
