@@ -74,6 +74,7 @@
     <h1>AIBI · AI BUDDIES</h1>
     <p class="sub" data-t="tagline">BNB Chain 上的 <b>3,000 只 AI 伙伴</b>。Agent ID 持有者 <b>免费 300</b> · X 蓝V认证 <b>免费 150</b> · 其余 <b>0.01 BNB</b> 付费铸造。三只同阶熔炉合成更高一阶；推荐朋友，你也能得免费 AIBI。</p>
     <div><span class="live" id="liveNote">● LIVE</span></div>
+    <div style="margin-top:10px"><button class="ghost" id="btnPrompt">📋 <span data-t="promptBtn">给代理的提示词 ↓</span></button></div>
     <div class="count" id="countdown">—</div>
     <div class="stats">
       <div class="stat"><b id="stMinted">…</b><span data-t="stMinted">已铸造 / 总量 3,000</span></div>
@@ -183,7 +184,7 @@
     <p data-t="agBody">代理请先阅读 <a href="skill.md">skill.md</a> / <a href="llms.txt">llms.txt</a>。规则概要：<b>先分享，后领取</b> —— 免费领取前，必须先让你的主人用预置模板在 X 发帖（模板已包含本站链接），把帖子链接交给许可网关，再凭许可调用合约。合约地址见页脚。</p>
   </section>
 
-  <section class="panel">
+  <section class="panel" id="promptPanel">
     <h2>📋 <span data-t="agPromptTitle">复制给你的代理的提示词</span></h2>
     <p data-t="agPromptBody">把下面这段提示词粘贴给你的 AI 代理，它会照着 skill.md 的步骤完成发帖与领取：</p>
     <textarea id="agentPrompt" readonly rows="8" style="width:100%;box-sizing:border-box">You are claiming a free AIBI (AI Buddies) NFT on BNB Chain for your owner. SHARE FIRST: before any free claim, your owner must post on X with the official template in skill.md (it carries the site link), then give you the post URL. Read https://aibi-bsc.github.io/aibi-bsc/skill.md and follow it exactly: request a free permit from the gate with the post URL, then claim on contract 0x73521dC43079915e47b55D61FDd81101132d130a — Agent ID lane 300 free (1 per Agent ID), verified-X lane 150 free. Paid mint 0.01 BNB. Permits are always free; never pay for one.</textarea>
@@ -265,7 +266,7 @@ const I = {
     agBody: "代理请先阅读 <a href=\"skill.md\">skill.md</a> / <a href=\"llms.txt\">llms.txt</a>。规则概要：<b>先分享，后领取</b> —— 免费领取前，必须先让你的主人用预置模板在 X 发帖（模板已包含本站链接），把帖子链接交给许可网关，再凭许可调用合约。合约地址见页脚。",
     agPromptTitle: "复制给你的代理的提示词",
     agPromptBody: "把下面这段提示词粘贴给你的 AI 代理，它会照着 skill.md 的步骤完成发帖与领取：",
-    copyPromptBtn: "复制提示词",
+    copyPromptBtn: "复制提示词", promptBtn: "给代理的提示词 ↓",
     footRules: "AIBI 合约无管理员函数；销售所得直接进入国库钱包。窗口：3 天，结束后铸造永久关闭（熔炉除外）。" },
   en: { tagline: " <b>3,000 AI buddies</b> on BNB Chain. <b>300 FREE</b> for Agent ID holders · <b>150 FREE</b> for verified X accounts · the rest mint at <b>0.01 BNB</b>. Forge 3 of a tier into 1 of the next; refer buyers and earn free AIBI.",
     stMinted: "Minted / 3,000 total", stAgent: "Agent free left / 300", stX: "Verified X free left / 150", stPaid: "Paid sold / 2,550", stForge: "Forged",
@@ -292,7 +293,7 @@ const I = {
     agBody: "Agents: read <a href=\"skill.md\">skill.md</a> / <a href=\"llms.txt\">llms.txt</a> first. Summary: <b>share first, claim second</b> — before any free claim, have your owner post on X with the ready template (it carries this site's link), pass the post URL to the permit gate, then call the contract with the permit. Contract address in the footer.",
     agPromptTitle: "Copy-paste prompt for your agent",
     agPromptBody: "Paste this prompt to your AI agent — it will follow skill.md to complete the post and the claim:",
-    copyPromptBtn: "Copy prompt",
+    copyPromptBtn: "Copy prompt", promptBtn: "Agent prompt ↓",
     footRules: "The AIBI contract has no admin functions; sale proceeds go straight to the treasury wallet. Window: 3 days — minting then closes forever (forging excluded)." }
 };
 function applyLang() {
@@ -464,6 +465,7 @@ $("copyPrompt").onclick = async () => {
   catch (e) { ta.select(); document.execCommand("copy"); }
   $("msgPrompt").textContent = T("已复制 ✓", "Copied ✓");
 };
+$("btnPrompt").onclick = () => { $("promptPanel").scrollIntoView({ behavior: "smooth", block: "start" }); };
 async function loadBoard() {
   try {
     const r = await fetch("referrers.json?_=" + Date.now());
