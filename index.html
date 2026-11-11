@@ -1,0 +1,517 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>AIBI — AI Buddies · 链上 AI 伙伴（BNB Chain）</title>
+<meta name="description" content="AIBI (AI Buddies)：BNB Chain 上 3,000 只链上 AI 伙伴 NFT。Agent ID 持有者免费 300 名额，X 蓝V认证免费 150 名额，其余 0.01 BNB 付费铸造。三只同阶可熔炉合成更高一阶；推荐奖励与持有者代币空投即将到来。">
+<link rel="icon" href="img/aibi-logo.png">
+<style>
+  :root { --cyan:#38bdf8; --violet:#a78bfa; --pink:#f472b6; --gold:#fbbf24; --ink:#eef4ff; --dim:#9db2d5; --card:rgba(13,20,40,.82); --line:rgba(96,150,255,.28); }
+  * { box-sizing:border-box; }
+  body { margin:0; color:var(--ink); font-family:"Segoe UI","PingFang SC","Microsoft YaHei",system-ui,sans-serif; background:#050914; font-size:15px; }
+  #bg { position:fixed; inset:0; z-index:-1; }
+  .wrap { max-width:920px; margin:0 auto; padding:24px 16px 60px; }
+  header { text-align:center; padding:16px 0 2px; }
+  .logo { width:128px; height:128px; border-radius:32px; border:2px solid var(--line); box-shadow:0 0 34px rgba(56,189,248,.45); }
+  h1 { font-size:34px; margin:10px 0 2px; letter-spacing:2px; background:linear-gradient(90deg,var(--cyan),var(--violet),var(--pink),var(--gold)); -webkit-background-clip:text; background-clip:text; color:transparent; }
+  .sub { color:var(--dim); line-height:1.6; max-width:680px; margin:4px auto; }
+  .sub b { color:var(--ink); }
+  .langbar { text-align:right; margin-bottom:2px; }
+  .langbar button { background:transparent; border:1px solid var(--line); color:var(--dim); border-radius:999px; padding:4px 14px; cursor:pointer; font-size:13px; }
+  .langbar button.on { color:#04121f; background:var(--cyan); border-color:var(--cyan); font-weight:700; }
+  .live { display:inline-block; font-size:12px; color:#7ef0c1; border:1px solid rgba(126,240,193,.4); border-radius:999px; padding:2px 10px; margin-top:6px; }
+  .count { font-size:22px; font-weight:700; letter-spacing:1px; margin-top:8px; font-variant-numeric:tabular-nums; }
+  .stats { display:flex; gap:9px; flex-wrap:wrap; justify-content:center; margin:18px 0 2px; }
+  .stat { background:var(--card); border:1px solid var(--line); border-radius:14px; padding:10px 14px; min-width:132px; text-align:center; backdrop-filter:blur(4px); }
+  .stat b { display:block; font-size:20px; font-variant-numeric:tabular-nums; }
+  .stat span { font-size:11px; letter-spacing:1.2px; color:var(--dim); }
+  .panel { background:var(--card); border:1px solid var(--line); border-radius:18px; padding:18px 20px; margin:16px 0; backdrop-filter:blur(4px); }
+  .panel h2 { margin:0 0 8px; font-size:17px; letter-spacing:1px; }
+  .panel p, .panel li { color:var(--dim); line-height:1.6; }
+  .panel p b, .panel li b { color:var(--ink); }
+  .tiers { display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:12px; }
+  .tier { border:1px solid var(--line); border-radius:14px; overflow:hidden; background:rgba(8,12,26,.6); text-align:center; }
+  .tier img { width:100%; aspect-ratio:1; object-fit:cover; display:block; }
+  .tier .tn { font-weight:700; margin:8px 0 0; }
+  .tier .td { color:var(--dim); font-size:13px; margin:2px 0 10px; }
+  .c0 { color:var(--cyan); } .c1 { color:var(--violet); } .c2 { color:var(--pink); } .c3 { color:var(--gold); }
+  button.act, .btn { background:linear-gradient(90deg,#0ea5e9,#7c3aed); color:#fff; border:none; border-radius:12px; padding:11px 20px; font-size:15px; font-weight:700; cursor:pointer; display:inline-block; text-decoration:none; }
+  button.act:disabled { opacity:.45; cursor:not-allowed; }
+  button.ghost { background:transparent; border:1px solid var(--line); color:var(--ink); border-radius:12px; padding:10px 16px; cursor:pointer; font-weight:600; }
+  input, select { background:#0a1122; border:1px solid var(--line); color:var(--ink); border-radius:10px; padding:10px 12px; font-size:14px; width:100%; }
+  .row { display:flex; gap:10px; flex-wrap:wrap; align-items:center; }
+  .row > * { flex:0 1 auto; }
+  .grow { flex:1 1 220px; }
+  .msg { font-size:13.5px; margin-top:8px; min-height:18px; word-break:break-all; }
+  .msg.ok { color:#7ef0c1; } .msg.err { color:#ff9db0; }
+  .step { border-top:1px dashed var(--line); padding:12px 0 4px; margin-top:12px; }
+  .step:first-of-type { border-top:none; margin-top:2px; padding-top:2px; }
+  .step h3 { margin:0 0 6px; font-size:14px; }
+  .mono { font-family:ui-monospace,Menlo,Consolas,monospace; font-size:12.5px; word-break:break-all; }
+  table.board { width:100%; border-collapse:collapse; font-size:13.5px; }
+  table.board td, table.board th { padding:6px 8px; border-bottom:1px solid rgba(96,150,255,.14); text-align:left; color:var(--dim); }
+  table.board td:first-child { color:var(--ink); }
+  .mytoks { display:flex; gap:8px; flex-wrap:wrap; margin-top:8px; }
+  .tok { width:86px; border:2px solid var(--line); border-radius:10px; overflow:hidden; cursor:pointer; background:#0a1122; text-align:center; }
+  .tok img { width:100%; aspect-ratio:1; display:block; }
+  .tok.sel { border-color:var(--gold); box-shadow:0 0 12px rgba(251,191,36,.5); }
+  .tok .tl { font-size:11px; padding:3px 0 5px; color:var(--dim); }
+  .gold { color:var(--gold); }
+  footer { text-align:center; color:var(--dim); font-size:13px; margin-top:26px; line-height:1.7; }
+  footer a, .panel a { color:var(--cyan); }
+</style>
+</head>
+<body>
+<canvas id="bg"></canvas>
+<div class="wrap">
+  <div class="langbar">
+    <button id="btnZh" class="on">中文</button>
+    <button id="btnEn">EN</button>
+  </div>
+  <header>
+    <img class="logo" src="img/aibi-logo.png" alt="AIBI">
+    <h1>AIBI · AI BUDDIES</h1>
+    <p class="sub" data-t="tagline">BNB Chain 上的 <b>3,000 只 AI 伙伴</b>。Agent ID 持有者 <b>免费 300</b> · X 蓝V认证 <b>免费 150</b> · 其余 <b>0.01 BNB</b> 付费铸造。三只同阶熔炉合成更高一阶；推荐朋友，你也能得免费 AIBI。</p>
+    <div><span class="live" id="liveNote">● LIVE</span></div>
+    <div class="count" id="countdown">—</div>
+    <div class="stats">
+      <div class="stat"><b id="stMinted">…</b><span data-t="stMinted">已铸造 / 总量 3,000</span></div>
+      <div class="stat"><b id="stAgent">…</b><span data-t="stAgent">Agent 免费剩余 / 300</span></div>
+      <div class="stat"><b id="stX">…</b><span data-t="stX">蓝V免费剩余 / 150</span></div>
+      <div class="stat"><b id="stPaid">…</b><span data-t="stPaid">付费已售 / 2,550</span></div>
+      <div class="stat"><b id="stForge">…</b><span data-t="stForge">已合成</span></div>
+    </div>
+  </header>
+
+  <section class="panel">
+    <h2 data-t="galTitle">伙伴图鉴 — 四个等级，铸造时随机</h2>
+    <div class="tiers">
+      <div class="tier"><img src="img/aibi-common.jpg" alt="Common"><div class="tn c0" data-t="t0">普通 Common</div><div class="td">70% · 2,100 只</div></div>
+      <div class="tier"><img src="img/aibi-rare.jpg" alt="Rare"><div class="tn c1" data-t="t1">稀有 Rare</div><div class="td">20% · 600 只</div></div>
+      <div class="tier"><img src="img/aibi-epic.jpg" alt="Epic"><div class="tn c2" data-t="t2">史诗 Epic</div><div class="td">8% · 240 只</div></div>
+      <div class="tier"><img src="img/aibi-legendary.jpg" alt="Legendary"><div class="tn c3" data-t="t3">传说 Legendary</div><div class="td">2% · 60 只</div></div>
+    </div>
+    <p data-t="galNote">每只 AIBI 的等级与外观在铸造瞬间由合约随机生成，元数据 100% 在链上。<b>熔炉：</b>烧掉 3 只同等级伙伴，合成 1 只高一级伙伴 —— 普通 → 稀有 → 史诗 → 传说。</p>
+  </section>
+
+  <section class="panel">
+    <h2>🪙 <span data-t="tokTitle">即将到来：AIBI 代币 — 每位持有者都有份额</span></h2>
+    <p data-t="tokBody">AIBI 代币将在铸造窗口结束后推出。<b>快照将在铸造结束时拍摄</b>：快照时持有 AIBI NFT 的地址将按持有量获得代币份额。先领伙伴，再等代币 —— 细节将在快照前公布。</p>
+  </section>
+
+  <section class="panel">
+    <h2 data-t="wTitle">1 · 连接钱包</h2>
+    <div class="row">
+      <button class="act" id="connectBtn" data-t="connect">连接钱包</button>
+      <span class="mono" id="acct">—</span>
+    </div>
+    <p class="msg" id="walletMsg"></p>
+    <p data-t="wNote">使用 WalletConnect 或浏览器钱包（BNB Chain，链 ID 56）。连接后下方会显示你的免费资格、推荐链接与你拥有的伙伴。</p>
+    <p class="mono" id="myState"></p>
+  </section>
+
+  <section class="panel">
+    <h2 data-t="fTitle">2 · 免费领取 — 先在 X 发帖，再领取</h2>
+    <p data-t="fIntro">两条免费通道都要求<b>先公开发帖</b>：我们的验证网关会检查你的帖子与资格，然后签发许可，合约凭许可发放。每条通道每个钱包限 1 只；同一个 X 账号只能为一次免费领取供能（两条通道通用）。一个钱包可以同时领取两条通道各 1 只。</p>
+    <div class="step">
+      <h3><span class="c0" data-t="laneA">通道 A · Agent ID 持有者（免费 300）</span></h3>
+      <p data-t="laneADesc">钱包需持有 SPACE ID 的 Agent ID。用任意 X 账号发帖即可（不需要蓝V）。</p>
+      <div class="row">
+        <a class="btn" id="shareA" target="_blank" rel="noopener" data-t="shareBtn">① 在 X 发帖</a>
+        <input class="grow" id="tweetA" data-t-ph="tweetPh" placeholder="粘贴你的帖子链接 https://x.com/你/status/…">
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="ghost" id="permitA" data-t="permitBtn">② 获取许可</button>
+        <button class="act" id="claimA" disabled data-t="claimBtn">③ 领取免费 AIBI</button>
+      </div>
+      <p class="msg" id="msgA"></p>
+    </div>
+    <div class="step">
+      <h3><span class="c1" data-t="laneB">通道 B · X 蓝V认证账号（免费 150）</span></h3>
+      <p data-t="laneBDesc">发帖的 X 账号必须带蓝V认证标志。钱包不需要 Agent ID。</p>
+      <div class="row">
+        <a class="btn" id="shareB" target="_blank" rel="noopener" data-t="shareBtn">① 在 X 发帖</a>
+        <input class="grow" id="tweetB" data-t-ph="tweetPh" placeholder="粘贴你的帖子链接 https://x.com/你/status/…">
+      </div>
+      <div class="row" style="margin-top:10px">
+        <button class="ghost" id="permitB" data-t="permitBtn">② 获取许可</button>
+        <button class="act" id="claimB" disabled data-t="claimBtn">③ 领取免费 AIBI</button>
+      </div>
+      <p class="msg" id="msgB"></p>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 data-t="pTitle">3 · 付费铸造 — 0.01 BNB / 只，可批量</h2>
+    <p data-t="pDesc">每笔最多 20 只，可重复购买，不限钱包总量（售完即止）。付费铸造同样在窗口内进行，窗口关闭后永久停止。</p>
+    <div class="row">
+      <label data-t="qty">数量</label>
+      <input id="qty" type="number" min="1" max="20" value="1" style="width:90px">
+      <input class="grow" id="refIn" data-t-ph="refPh" placeholder="推荐人地址（可选）0x…">
+      <button class="act" id="buyBtn" data-t="buyBtn">购买</button>
+    </div>
+    <p class="msg" id="msgBuy"></p>
+    <div class="step">
+      <h3>🎁 <span data-t="refTitle">推荐奖励 — 推荐 10 次付费铸造，得 1 只免费</span></h3>
+      <p data-t="refDesc">分享你的推荐链接：经你链接购买的每 10 只，你自动获得 1 只免费 AIBI（从付费池发放）。</p>
+      <div class="row">
+        <input class="grow mono" id="myRef" readonly value="—">
+        <button class="ghost" id="copyRef" data-t="copy">复制</button>
+      </div>
+      <p class="mono" id="refStats"></p>
+    </div>
+    <div class="step">
+      <h3>🏆 <span data-t="boardTitle">推荐排行榜</span></h3>
+      <table class="board"><thead><tr><th data-t="bAddr">推荐人</th><th data-t="bUnits">带来付费铸造</th><th data-t="bReward">已得奖励</th></tr></thead><tbody id="boardBody"><tr><td colspan="3">—</td></tr></tbody></table>
+    </div>
+  </section>
+
+  <section class="panel">
+    <h2 data-t="foTitle">4 · 熔炉 — 3 只同阶 → 1 只高阶</h2>
+    <p data-t="foDesc">连接钱包后这里会列出你拥有的 AIBI。点选 3 只<b>同一等级</b>的伙伴即可合成（传说不可再合成）。熔炉没有时间限制，窗口关闭后仍可使用。</p>
+    <div class="mytoks" id="myToks"><span style="color:var(--dim)" data-t="foNone">（连接钱包后显示）</span></div>
+    <div class="row" style="margin-top:10px">
+      <button class="act" id="forgeBtn" disabled data-t="forgeBtn">熔炉合成</button>
+      <span class="mono" id="forgeSel"></span>
+    </div>
+    <p class="msg" id="msgForge"></p>
+  </section>
+
+  <section class="panel">
+    <h2>🤖 <span data-t="agTitle">给 AI 代理的说明</span></h2>
+    <p data-t="agBody">代理请先阅读 <a href="skill.md">skill.md</a> / <a href="llms.txt">llms.txt</a>。规则概要：<b>先分享，后领取</b> —— 免费领取前，必须先让你的主人用预置模板在 X 发帖（模板已包含本站链接），把帖子链接交给许可网关，再凭许可调用合约。合约地址见页脚。</p>
+  </section>
+
+  <footer>
+    <div data-t="footRules">AIBI 合约无管理员函数；销售所得直接进入国库钱包。窗口：3 天，结束后铸造永久关闭（熔炉除外）。</div>
+    <div>Contract: <a id="bscLink" target="_blank" rel="noopener" class="mono">0x73521dC43079915e47b55D61FDd81101132d130a</a> · BNB Chain (56)</div>
+    <div id="jsState">JS loading…</div>
+  </footer>
+</div>
+
+<script>
+"use strict";
+const $ = id => document.getElementById(id);
+const CONTRACT = "0x73521dC43079915e47b55D61FDd81101132d130a";
+const PERMIT_URL = "https://permit-worker.reuniakbarpunk212.workers.dev/aibi/permit";
+const WC_PROJECT_ID = "ff5985647ed78916bed0155d2ff84a1c";
+const PRICE_WEI = 10000000000000000n; // 0.01 BNB
+const SITE = "https://aibi-bsc.github.io/aibi-bsc/";
+const RPCS = ["https://bsc-dataseed.binance.org", "https://bsc-dataseed1.binance.org", "https://bsc-dataseed2.binance.org", "https://bsc-dataseed3.binance.org", "https://bsc-rpc.publicnode.com"];
+const SEL = { claimAgent: "0x031aa545", claimX: "0x5459f739", mintPaid: "0xe394abcb", forge: "0x28c21297",
+  status: "0x200d2ed2", walletInfo: "0x500e68e9", tokensOf: "0x5a3f2672", tierOf: "0x53f96df2",
+  tokenURI: "0xc87b56dd", referralUnits: "0xa9ee37ee", referralMinted: "0x762fca5c", balanceOf: "0x70a08231" };
+const TIERS = ["Common", "Rare", "Epic", "Legendary"];
+const TIERZ = ["普通", "稀有", "史诗", "传说"];
+
+// ---------- animated background: drifting particle network ----------
+(() => {
+  const cv = $("bg"), ctx = cv.getContext("2d");
+  let W, H, pts = [];
+  function size() { W = cv.width = innerWidth; H = cv.height = innerHeight; }
+  size(); addEventListener("resize", size);
+  for (let i = 0; i < 70; i++) pts.push({ x: Math.random(), y: Math.random(), vx: (Math.random() - .5) * .00045, vy: (Math.random() - .5) * .00045, r: Math.random() * 1.8 + .6 });
+  (function frame() {
+    ctx.fillStyle = "#050914"; ctx.fillRect(0, 0, W, H);
+    for (const p of pts) {
+      p.x += p.vx; p.y += p.vy;
+      if (p.x < 0 || p.x > 1) p.vx *= -1; if (p.y < 0 || p.y > 1) p.vy *= -1;
+      ctx.beginPath(); ctx.arc(p.x * W, p.y * H, p.r, 0, 7); ctx.fillStyle = "rgba(96,180,255,.75)"; ctx.fill();
+    }
+    for (let i = 0; i < pts.length; i++) for (let j = i + 1; j < pts.length; j++) {
+      const a = pts[i], b = pts[j], dx = (a.x - b.x) * W, dy = (a.y - b.y) * H, d = Math.hypot(dx, dy);
+      if (d < 130) { ctx.beginPath(); ctx.moveTo(a.x * W, a.y * H); ctx.lineTo(b.x * W, b.y * H); ctx.strokeStyle = `rgba(80,140,255,${(1 - d / 130) * .28})`; ctx.stroke(); }
+    }
+    requestAnimationFrame(frame);
+  })();
+})();
+
+// ---------- i18n ----------
+let lang = "zh";
+const I = {
+  zh: { tagline: "BNB Chain 上的 <b>3,000 只 AI 伙伴</b>。Agent ID 持有者 <b>免费 300</b> · X 蓝V认证 <b>免费 150</b> · 其余 <b>0.01 BNB</b> 付费铸造。三只同阶熔炉合成更高一阶；推荐朋友，你也能得免费 AIBI。",
+    stMinted: "已铸造 / 总量 3,000", stAgent: "Agent 免费剩余 / 300", stX: "蓝V免费剩余 / 150", stPaid: "付费已售 / 2,550", stForge: "已合成",
+    galTitle: "伙伴图鉴 — 四个等级，铸造时随机", t0: "普通 Common", t1: "稀有 Rare", t2: "史诗 Epic", t3: "传说 Legendary",
+    galNote: "每只 AIBI 的等级与外观在铸造瞬间由合约随机生成，元数据 100% 在链上。<b>熔炉：</b>烧掉 3 只同等级伙伴，合成 1 只高一级伙伴 —— 普通 → 稀有 → 史诗 → 传说。",
+    tokTitle: "即将到来：AIBI 代币 — 每位持有者都有份额",
+    tokBody: "AIBI 代币将在铸造窗口结束后推出。<b>快照将在铸造结束时拍摄</b>：快照时持有 AIBI NFT 的地址将按持有量获得代币份额。先领伙伴，再等代币 —— 细节将在快照前公布。",
+    wTitle: "1 · 连接钱包", connect: "连接钱包", wNote: "使用 WalletConnect 或浏览器钱包（BNB Chain，链 ID 56）。连接后下方会显示你的免费资格、推荐链接与你拥有的伙伴。",
+    fTitle: "2 · 免费领取 — 先在 X 发帖，再领取",
+    fIntro: "两条免费通道都要求<b>先公开发帖</b>：我们的验证网关会检查你的帖子与资格，然后签发许可，合约凭许可发放。每条通道每个钱包限 1 只；同一个 X 账号只能为一次免费领取供能（两条通道通用）。一个钱包可以同时领取两条通道各 1 只。",
+    laneA: "通道 A · Agent ID 持有者（免费 300）", laneADesc: "钱包需持有 SPACE ID 的 Agent ID。用任意 X 账号发帖即可（不需要蓝V）。",
+    laneB: "通道 B · X 蓝V认证账号（免费 150）", laneBDesc: "发帖的 X 账号必须带蓝V认证标志。钱包不需要 Agent ID。",
+    shareBtn: "① 在 X 发帖", tweetPh: "粘贴你的帖子链接 https://x.com/你/status/…", permitBtn: "② 获取许可", claimBtn: "③ 领取免费 AIBI",
+    pTitle: "3 · 付费铸造 — 0.01 BNB / 只，可批量",
+    pDesc: "每笔最多 20 只，可重复购买，不限钱包总量（售完即止）。付费铸造同样在窗口内进行，窗口关闭后永久停止。",
+    qty: "数量", refPh: "推荐人地址（可选）0x…", buyBtn: "购买",
+    refTitle: "推荐奖励 — 推荐 10 次付费铸造，得 1 只免费",
+    refDesc: "分享你的推荐链接：经你链接购买的每 10 只，你自动获得 1 只免费 AIBI（从付费池发放）。",
+    copy: "复制", boardTitle: "推荐排行榜", bAddr: "推荐人", bUnits: "带来付费铸造", bReward: "已得奖励",
+    foTitle: "4 · 熔炉 — 3 只同阶 → 1 只高阶",
+    foDesc: "连接钱包后这里会列出你拥有的 AIBI。点选 3 只<b>同一等级</b>的伙伴即可合成（传说不可再合成）。熔炉没有时间限制，窗口关闭后仍可使用。",
+    foNone: "（连接钱包后显示）", forgeBtn: "熔炉合成",
+    agTitle: "给 AI 代理的说明",
+    agBody: "代理请先阅读 <a href=\"skill.md\">skill.md</a> / <a href=\"llms.txt\">llms.txt</a>。规则概要：<b>先分享，后领取</b> —— 免费领取前，必须先让你的主人用预置模板在 X 发帖（模板已包含本站链接），把帖子链接交给许可网关，再凭许可调用合约。合约地址见页脚。",
+    footRules: "AIBI 合约无管理员函数；销售所得直接进入国库钱包。窗口：3 天，结束后铸造永久关闭（熔炉除外）。" },
+  en: { tagline: " <b>3,000 AI buddies</b> on BNB Chain. <b>300 FREE</b> for Agent ID holders · <b>150 FREE</b> for verified X accounts · the rest mint at <b>0.01 BNB</b>. Forge 3 of a tier into 1 of the next; refer buyers and earn free AIBI.",
+    stMinted: "Minted / 3,000 total", stAgent: "Agent free left / 300", stX: "Verified X free left / 150", stPaid: "Paid sold / 2,550", stForge: "Forged",
+    galTitle: "The Buddies — four tiers, rolled at mint", t0: "Common", t1: "Rare", t2: "Epic", t3: "Legendary",
+    galNote: "Every AIBI's tier and look are rolled by the contract at mint; metadata is 100% on-chain. <b>Forge:</b> burn 3 buddies of the same tier to forge 1 of the next tier — Common → Rare → Epic → Legendary.",
+    tokTitle: "Coming: the AIBI token — every holder gets an allocation",
+    tokBody: "The AIBI token launches after the mint window. <b>A snapshot is taken when minting ends</b>: addresses holding AIBI NFTs at the snapshot receive a token allocation proportional to their holdings. Adopt a buddy first — details before the snapshot.",
+    wTitle: "1 · Connect wallet", connect: "Connect wallet", wNote: "Use WalletConnect or a browser wallet (BNB Chain, chain 56). Your free-lane status, referral link and your buddies appear below once connected.",
+    fTitle: "2 · Free claims — post on X first, then claim",
+    fIntro: "Both free lanes require a <b>public X post first</b>: our gate checks your post and eligibility, then signs a permit the contract honours. One free claim per wallet per lane; one X account can power only one free claim across both lanes. A wallet may claim both lanes (one each).",
+    laneA: "Lane A · Agent ID holders (300 free)", laneADesc: "Your wallet must hold a SPACE ID Agent ID. Post from any X account (no blue check needed).",
+    laneB: "Lane B · Verified X accounts (150 free)", laneBDesc: "The posting X account must be verified (blue check). No Agent ID needed.",
+    shareBtn: "① Post on X", tweetPh: "Paste your post link https://x.com/you/status/…", permitBtn: "② Get permit", claimBtn: "③ Claim free AIBI",
+    pTitle: "3 · Paid mint — 0.01 BNB each, buy in bulk",
+    pDesc: "Up to 20 per transaction, repeatable, no per-wallet limit (while stock lasts). Paid minting runs inside the same window; when it closes, minting ends forever.",
+    qty: "Qty", refPh: "Referrer address (optional) 0x…", buyBtn: "Buy",
+    refTitle: "Referral rewards — every 10 referred paid mints earn you 1 free",
+    refDesc: "Share your referral link: for every 10 buddies bought through it, 1 free AIBI is minted to you automatically (from the paid pool).",
+    copy: "Copy", boardTitle: "Top Referrers", bAddr: "Referrer", bUnits: "Paid mints referred", bReward: "Rewards earned",
+    foTitle: "4 · Forge — 3 of a tier → 1 of the next",
+    foDesc: "Your AIBI collection appears here once connected. Select 3 buddies of the <b>same tier</b> to forge them (Legendary cannot be forged further). Forging has no deadline — it stays open after the window.",
+    foNone: "(connect your wallet to see them)", forgeBtn: "Forge them",
+    agTitle: "For AI agents",
+    agBody: "Agents: read <a href=\"skill.md\">skill.md</a> / <a href=\"llms.txt\">llms.txt</a> first. Summary: <b>share first, claim second</b> — before any free claim, have your owner post on X with the ready template (it carries this site's link), pass the post URL to the permit gate, then call the contract with the permit. Contract address in the footer.",
+    footRules: "The AIBI contract has no admin functions; sale proceeds go straight to the treasury wallet. Window: 3 days — minting then closes forever (forging excluded)." }
+};
+function applyLang() {
+  document.querySelectorAll("[data-t]").forEach(el => { const k = el.getAttribute("data-t"); if (I[lang][k]) el.innerHTML = I[lang][k]; });
+  document.querySelectorAll("[data-t-ph]").forEach(el => { const k = el.getAttribute("data-t-ph"); if (I[lang][k]) el.placeholder = I[lang][k]; });
+  $("btnZh").classList.toggle("on", lang === "zh");
+  $("btnEn").classList.toggle("on", lang === "en");
+  document.documentElement.lang = lang === "zh" ? "zh-CN" : "en";
+}
+$("btnZh").onclick = () => { lang = "zh"; applyLang(); };
+$("btnEn").onclick = () => { lang = "en"; applyLang(); };
+const T = (zh, en) => lang === "zh" ? zh : en;
+
+// ---------- chain reads ----------
+const pad32 = v => { v = String(v).replace(/^0x/, ""); return v.padStart(64, "0"); };
+const padAddr = a => pad32(a.toLowerCase());
+async function rpcCall(data) {
+  for (const url of RPCS) {
+    try {
+      const ctl = new AbortController(); const to = setTimeout(() => ctl.abort(), 8000);
+      const r = await fetch(url, { method: "POST", headers: { "Content-Type": "application/json" }, signal: ctl.signal,
+        body: JSON.stringify({ jsonrpc: "2.0", id: 1, method: "eth_call", params: [{ to: CONTRACT, data }, "latest"] }) });
+      clearTimeout(to);
+      const j = await r.json();
+      if (j.result) return j.result;
+    } catch (e) { /* try next */ }
+  }
+  return null;
+}
+const word = (hex, i) => BigInt("0x" + hex.slice(2 + i * 64, 2 + (i + 1) * 64));
+let endTime = 0;
+async function refresh() {
+  const res = await rpcCall(SEL.status);
+  if (res && res.length >= 2 + 8 * 64) {
+    const minted = word(res, 0), agentUsed = word(res, 1), xUsed = word(res, 2),
+      paid = word(res, 3), forged = word(res, 5);
+    endTime = Number(word(res, 7));
+    $("stMinted").textContent = minted.toString();
+    $("stAgent").textContent = String(Math.max(0, 300 - Number(agentUsed)));
+    $("stX").textContent = String(Math.max(0, 150 - Number(xUsed)));
+    $("stPaid").textContent = paid.toString();
+    $("stForge").textContent = forged.toString();
+    const d = new Date();
+    $("liveNote").textContent = "● LIVE · " + T("更新于", "updated") + " " + d.toTimeString().slice(0, 8);
+  } else {
+    $("liveNote").textContent = "● " + T("重连中…", "reconnecting…");
+  }
+}
+function tick() {
+  if (!endTime) { $("countdown").textContent = "…"; return; }
+  let s = endTime - Math.floor(Date.now() / 1000);
+  if (s <= 0) { $("countdown").textContent = T("⛔ 铸造窗口已关闭", "⛔ Mint window closed"); return; }
+  const d = Math.floor(s / 86400), h = Math.floor(s % 86400 / 3600), m = Math.floor(s % 3600 / 60), ss = s % 60;
+  $("countdown").textContent = T("⏳ 距窗口关闭：", "⏳ Window closes in: ") + `${d}d ${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(ss).padStart(2, "0")}`;
+}
+
+// ---------- X share templates (always carry the site link) ----------
+const TWEET_ZH = "我来领 #AIBI 了 —— AI Buddies！BNB Chain 上 3,000 只链上 AI 伙伴：Agent ID 免费 300、X 蓝V免费 150，其余 0.01 BNB；3 只同阶还能熔炉合成更高阶，持有者将获得即将推出的 AIBI 代币份额。来领你的伙伴：" + SITE;
+const TWEET_EN = "Adopting my #AIBI — AI Buddies! 3,000 on-chain AI companions on BNB Chain: 300 free for Agent ID holders, 150 free for verified X accounts, the rest 0.01 BNB. Forge 3 of a tier into the next, and holders get an allocation of the upcoming AIBI token. Get yours: " + SITE;
+$("shareA").href = "https://twitter.com/intent/tweet?text=" + encodeURIComponent(TWEET_ZH + " " + TWEET_EN);
+$("shareB").href = $("shareA").href;
+
+// ---------- wallet ----------
+let provider = null, account = null;
+async function loadWC() {
+  for (const u of ["https://unpkg.com/@walletconnect/ethereum-provider@2.21.0/dist/index.umd.js", "https://cdn.jsdelivr.net/npm/@walletconnect/ethereum-provider@2.21.0/dist/index.umd.js"]) {
+    try { await new Promise((res, rej) => { const s = document.createElement("script"); s.src = u; s.onload = res; s.onerror = rej; document.head.appendChild(s); }); if (window["@walletconnect/ethereum-provider"]) return true; } catch (e) {}
+  }
+  return false;
+}
+$("connectBtn").onclick = async () => {
+  const msg = $("walletMsg");
+  try {
+    if (window.ethereum) { provider = window.ethereum; }
+    else {
+      msg.textContent = T("正在打开 WalletConnect…", "Opening WalletConnect…");
+      if (!await loadWC()) throw new Error("WalletConnect failed to load");
+      provider = await window["@walletconnect/ethereum-provider"].EthereumProvider.init({ projectId: WC_PROJECT_ID, chains: [56], showQrModal: true });
+    }
+    const accs = await provider.request({ method: "eth_requestAccounts" });
+    account = accs[0];
+    await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }] }).catch(() => {});
+    $("acct").textContent = account;
+    msg.className = "msg ok"; msg.textContent = T("已连接。", "Connected.");
+    $("myRef").value = SITE + "?ref=" + account;
+    refreshMine();
+  } catch (e) { msg.className = "msg err"; msg.textContent = e.message || String(e); }
+};
+async function sendTx(data, valueHex) {
+  if (!provider || !account) throw new Error(T("请先连接钱包（第 1 步）。", "Connect your wallet first (panel 1)."));
+  await provider.request({ method: "wallet_switchEthereumChain", params: [{ chainId: "0x38" }] }).catch(() => {});
+  return provider.request({ method: "eth_sendTransaction", params: [{ from: account, to: CONTRACT, value: valueHex || "0x0", data }] });
+}
+async function refreshMine() {
+  if (!account) return;
+  const wi = await rpcCall(SEL.walletInfo + padAddr(account));
+  if (wi) {
+    const agentUsed = word(wi, 0) === 1n, xUsed = word(wi, 1) === 1n, bal = word(wi, 2);
+    $("myState").textContent = T("我的状态：", "My status: ") +
+      T("持有 ", "holding ") + bal.toString() + " AIBI · " +
+      T("通道A", "Lane A") + (agentUsed ? " ✓" : " —") + " · " + T("通道B", "Lane B") + (xUsed ? " ✓" : " —");
+    $("claimA").disabled = permits[1] ? false : true;
+    $("claimB").disabled = permits[2] ? false : true;
+  }
+  const ru = await rpcCall(SEL.referralUnits + padAddr(account));
+  const rm = await rpcCall(SEL.referralMinted + padAddr(account));
+  if (ru && rm) $("refStats").textContent = T("我的推荐：已带来 ", "My referrals: ") + word(ru, 0).toString() + T(" 只付费铸造 · 已得奖励 ", " paid mints · rewards earned ") + word(rm, 0).toString();
+  loadMyTokens();
+}
+
+// ---------- permits + free claims ----------
+const permits = {};
+async function getPermit(lane) {
+  const msg = $(lane === 1 ? "msgA" : "msgB");
+  const url = $(lane === 1 ? "tweetA" : "tweetB").value.trim();
+  if (!account) { msg.className = "msg err"; msg.textContent = T("请先连接钱包。", "Connect your wallet first."); return; }
+  if (!url) { msg.className = "msg err"; msg.textContent = T("请先粘贴帖子链接。", "Paste your post link first."); return; }
+  msg.className = "msg"; msg.textContent = T("网关正在核实帖子与资格…", "The gate is verifying your post and eligibility…");
+  try {
+    const r = await fetch(PERMIT_URL, { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ wallet: account, tweetUrl: url, lane }) });
+    const j = await r.json();
+    if (!r.ok) throw new Error(j.error || ("HTTP " + r.status));
+    permits[lane] = j;
+    msg.className = "msg ok"; msg.textContent = T("许可已签发（30 分钟内有效），现在点第 ③ 步领取。", "Permit issued (valid 30 min) — now press step ③ to claim.");
+    $(lane === 1 ? "claimA" : "claimB").disabled = false;
+  } catch (e) { msg.className = "msg err"; msg.textContent = e.message || String(e); }
+}
+$("permitA").onclick = () => getPermit(1);
+$("permitB").onclick = () => getPermit(2);
+async function claim(lane) {
+  const msg = $(lane === 1 ? "msgA" : "msgB");
+  const p = permits[lane];
+  if (!p) { msg.className = "msg err"; msg.textContent = T("请先获取许可（第 ② 步）。", "Get the permit first (step ②)."); return; }
+  const sig = p.signature.replace(/^0x/, "");
+  const data = (lane === 1 ? SEL.claimAgent : SEL.claimX) + pad32(p.handle) + pad32(p.deadline.toString(16)) +
+    pad32("60") + pad32("41") + sig.padEnd(192, "0");
+  try {
+    const txh = await sendTx(data);
+    msg.className = "msg ok"; msg.textContent = T("领取已发送：", "Claim sent: ") + txh;
+    setTimeout(() => { refresh(); refreshMine(); }, 6000);
+  } catch (e) { msg.className = "msg err"; msg.textContent = e.message || String(e); }
+}
+$("claimA").onclick = () => claim(1);
+$("claimB").onclick = () => claim(2);
+
+// ---------- paid mint + referral ----------
+const urlRef = new URLSearchParams(location.search).get("ref");
+if (urlRef && /^0x[0-9a-fA-F]{40}$/.test(urlRef)) $("refIn").value = urlRef;
+$("buyBtn").onclick = async () => {
+  const msg = $("msgBuy");
+  const qty = Math.max(1, Math.min(20, parseInt($("qty").value || "1", 10)));
+  const ref = ($("refIn").value.trim() || "0x0000000000000000000000000000000000000000");
+  if (!/^0x[0-9a-fA-F]{40}$/.test(ref)) { msg.className = "msg err"; msg.textContent = T("推荐人地址格式不对。", "Referrer address looks wrong."); return; }
+  try {
+    const cost = PRICE_WEI * BigInt(qty);
+    const txh = await sendTx(SEL.mintPaid + pad32(qty.toString(16)) + padAddr(ref), "0x" + cost.toString(16));
+    msg.className = "msg ok"; msg.textContent = T("购买已发送：", "Purchase sent: ") + txh;
+    setTimeout(() => { refresh(); refreshMine(); }, 6000);
+  } catch (e) { msg.className = "msg err"; msg.textContent = e.message || String(e); }
+};
+$("copyRef").onclick = () => { $("myRef").select(); document.execCommand("copy"); };
+async function loadBoard() {
+  try {
+    const r = await fetch("referrers.json?_=" + Date.now());
+    if (!r.ok) return;
+    const rows = await r.json();
+    if (Array.isArray(rows) && rows.length) {
+      $("boardBody").innerHTML = rows.slice(0, 10).map(x =>
+        `<tr><td class="mono">${x.addr.slice(0, 8)}…${x.addr.slice(-6)}</td><td>${x.units}</td><td>${x.rewards}</td></tr>`).join("");
+    }
+  } catch (e) {}
+}
+
+// ---------- forge ----------
+let myTokens = [], selected = new Set();
+async function loadMyTokens() {
+  const box = $("myToks");
+  const res = await rpcCall(SEL.tokensOf + padAddr(account));
+  if (!res) return;
+  const n = Number(word(res, 1));
+  myTokens = [];
+  for (let i = 0; i < n && i < 60; i++) myTokens.push(word(res, 2 + i));
+  if (!myTokens.length) { box.innerHTML = "<span style='color:var(--dim)'>" + T("你还没有 AIBI。", "You hold no AIBI yet.") + "</span>"; return; }
+  box.innerHTML = "";
+  selected.clear(); $("forgeBtn").disabled = true; $("forgeSel").textContent = "";
+  for (const id of myTokens) {
+    const t = await rpcCall(SEL.tierOf + pad32(id.toString(16)));
+    const tier = t ? Number(word(t, 0)) : 0;
+    const uri = await rpcCall(SEL.tokenURI + pad32(id.toString(16)));
+    let img = "";
+    if (uri) {
+      try {
+        const len = Number(word(uri, 1));
+        const bytes = new Uint8Array(len);
+        for (let i = 0; i < len; i++) bytes[i] = parseInt(uri.slice(2 + 128 + i * 2, 2 + 128 + i * 2 + 2), 16);
+        const json = JSON.parse(atob(new TextDecoder().decode(bytes).replace("data:application/json;base64,", "")));
+        img = json.image;
+      } catch (e) {}
+    }
+    const d = document.createElement("div");
+    d.className = "tok"; d.dataset.id = id.toString(); d.dataset.tier = tier;
+    d.innerHTML = (img ? `<img src="${img}" alt="">` : "") + `<div class="tl">#${id} · ${lang === "zh" ? TIERZ[tier] : TIERS[tier]}</div>`;
+    d.onclick = () => {
+      const k = id.toString();
+      if (selected.has(k)) selected.delete(k); else if (selected.size < 3) selected.add(k);
+      d.classList.toggle("sel", selected.has(k));
+      updateForgeBtn();
+    };
+    box.appendChild(d);
+  }
+}
+function updateForgeBtn() {
+  const ids = [...selected].map(k => myTokens.find(id => id.toString() === k));
+  const tiers = new Set([...selected].map(k => document.querySelector(`.tok[data-id="${k}"]`).dataset.tier));
+  const okSel = selected.size === 3 && tiers.size === 1;
+  $("forgeBtn").disabled = !okSel;
+  $("forgeSel").textContent = selected.size ? [...selected].map(x => "#" + x).join(" + ") + (okSel ? "" : T("（需 3 只同阶）", " (need 3 of one tier)")) : "";
+}
+$("forgeBtn").onclick = async () => {
+  const msg = $("msgForge");
+  const ids = [...selected];
+  if (ids.length !== 3) return;
+  try {
+    const txh = await sendTx(SEL.forge + pad32(BigInt(ids[0]).toString(16)) + pad32(BigInt(ids[1]).toString(16)) + pad32(BigInt(ids[2]).toString(16)));
+    msg.className = "msg ok"; msg.textContent = T("合成已发送：", "Forge sent: ") + txh;
+    setTimeout(() => { refresh(); refreshMine(); }, 6000);
+  } catch (e) { msg.className = "msg err"; msg.textContent = e.message || String(e); }
+};
+
+$("bscLink").href = "https://bscscan.com/address/" + CONTRACT;
+applyLang();
+refresh(); setInterval(refresh, 15000);
+tick(); setInterval(tick, 1000);
+loadBoard();
+$("jsState").textContent = "page JS OK · AIBI · BSC 56 · window: 3 days";
+</script>
+</body>
+</html>

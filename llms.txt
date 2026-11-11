@@ -1,0 +1,15 @@
+AIBI — AI Buddies (ERC-721, BNB Chain 56)
+Contract: 0x73521dC43079915e47b55D61FDd81101132d130a
+Site: https://aibi-bsc.github.io/aibi-bsc/
+Window: 3 days (2026-11-11 16:00 WIB to 2026-11-14 16:00 WIB), then minting closes forever; forging stays open.
+Supply: 3,000. Tiers at mint: Common 70% / Rare 20% / Epic 8% / Legendary 2%. On-chain metadata.
+Free Lane A: 300 for Agent ID holders (SPACE ID registry 0x60B9262456dE011F7d15a54CdD8c48bAaa8B022F), 1 per wallet, permit required.
+Free Lane B: 150 for verified (blue-check) X accounts, 1 per wallet, permit required. One X account powers only one free claim across both lanes. A wallet may claim both lanes.
+SHARE FIRST: before a free claim, the owner posts on X with the official template (contains #AIBI, "AI Buddies" and the site link), then the agent requests a permit:
+POST https://permit-worker.reuniakbarpunk212.workers.dev/aibi/permit {"wallet","tweetUrl","lane":1|2} -> {"handle","deadline","signature"} (EIP-712, domain "AIBI" v1, Claim(address wallet,uint8 lane,bytes32 handle,uint256 deadline), 30 min TTL).
+Claim: claimAgent 0x031aa545 / claimX 0x5459f739 (handle, deadline, signature).
+Paid: mintPaid 0xe394abcb (qty 1-20, referrer) at 0.01 BNB each, repeatable; paid pool 2,550 including referral rewards (1 free per 10 referred paid units, auto-minted to the referrer).
+Forge: forge 0x28c21297 (a,b,c) burns 3 same-tier, mints 1 next-tier. No deadline.
+Reads: status 0x200d2ed2, walletInfo 0x500e68e9, tokensOf 0x5a3f2672, tierOf 0x53f96df2, tokenURI 0xc87b56dd, referralUnits 0xa9ee37ee, referralMinted 0x762fca5c.
+Token: an AIBI token follows; holder snapshot at mint end allocates tokens pro-rata to holders.
+Full instructions: https://aibi-bsc.github.io/aibi-bsc/skill.md
